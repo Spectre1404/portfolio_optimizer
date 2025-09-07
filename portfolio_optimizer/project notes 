@@ -1,0 +1,76 @@
+# 📘 Week 1 Notes — Portfolio Optimization Dashboard
+
+## 📁 Project Structure
+
+portfolio_optimizer/
+├── README.md
+├── requirements.txt
+├── src/
+│ └── hello_portfolio.py
+├── tests/
+└── notes/
+└── project_notes.md
+
+- `src/`: source code files
+- `tests/`: test scripts (not yet used)
+- `notes/`: markdown notes (this file)
+- `README.md`: project overview
+- `requirements.txt`: to be filled with dependencies
+
+---
+
+## 🐍 Python Setup & First Script
+
+**Script:** `src/hello_portfolio.py`
+
+```python
+print("Welcome to Portfolio Optimizer!")
+✅ Successfully ran the script in VS Code terminal using:
+python src/hello_portfolio.py
+🌱 Git Setup
+git init
+git add .
+git commit -m "Initial setup"
+✅ Git initialized
+✅ First commit created
+✅ User identity detected (name & email)
+✅ Project is Git-tracked
+🔗 GitHub Integration (To-Do)
+Created GitHub repo: portfolio_optimizer
+To connect local repo:
+git remote add origin https://github.com/YOUR_USERNAME/portfolio_optimizer.git
+git branch -M main
+git push -u origin main
+🧠 Python Concepts Reviewed
+📌 Variables
+stock_price = 150.50
+Variables store data values
+Can be changed or reused later in the script
+📋 Data Types
+Type	Example	Use
+int	10	Counts, shares
+float	150.5	Prices, percentages
+str	"AAPL"	Ticker symbols
+bool	True / False	Flags, conditions
+📚 Lists
+stocks = ['AAPL', 'GOOGL', 'MSFT']
+print(stocks[1])  # GOOGL
+Can store multiple values
+Accessed by index (starting at 0)
+📦 Python Libraries (Concept)
+What Are Libraries?
+Libraries = Prebuilt collections of functions to avoid writing everything from scratch.
+Key Libraries We'll Use:
+Library	Use
+pandas	Tabular data (like Excel)
+numpy	Arrays and numerical operations
+matplotlib	Data visualization
+yfinance	Pull stock data from Yahoo Finance
+scipy.optimize	For portfolio optimization
+sqlite3	Save data to a local SQL database
+plotly / Power BI	Optional for interactive dashboards
+🧪 Virtual Environments (Concept Only)
+Isolated Python environment per project
+Prevents dependency conflicts
+Tools: venv, conda, virtualenv
+Not required yet, but useful for large/team projects
