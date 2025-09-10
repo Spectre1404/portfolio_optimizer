@@ -74,3 +74,16 @@ Isolated Python environment per project
 Prevents dependency conflicts
 Tools: venv, conda, virtualenv
 Not required yet, but useful for large/team projects
+
+# Week 1, Part 2:
+
+- Created and activated a virtual environment using `python -m venv venv`
+- Installed essential libraries: pandas, numpy, matplotlib, yfinance
+- Generated `requirements.txt` using `pip freeze > requirements.txt`
+- Created `src/practice_basics.py` and practiced:
+  - Variables and data types
+  - Lists
+  - Simple arithmetic
+  - For-loops
+- Ran script successfully using `python src/practice_basics.py`
+- Committed all changes to Git
