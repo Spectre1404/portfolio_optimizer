@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual environment (should never have been committed)
+venv/
+
+# Cached price data (reproducible from source; not source itself)
+data_cache/
+
+# Generated outputs
+*.png
+*.html
