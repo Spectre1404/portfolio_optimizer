@@ -85,6 +85,46 @@ def _stats_block(result: PortfolioResult) -> str:
     )
 
 
+def _backtest_block(bt) -> str:
+    """Render an in-sample vs out-of-sample comparison from a BacktestResult.
+
+    Duck-typed on ``bt`` (``.entries``, ``.train_span``/``.train_days``,
+    ``.test_span``/``.test_days``) so report.py stays decoupled from backtest.py.
+    """
+    labels = {
+        "max_sharpe": "Max Sharpe",
+        "min_variance": "Min variance",
+        "equal_weight": "Equal weight (1/N)",
+    }
+    rows = ""
+    for key, label in labels.items():
+        e = bt.entries[key]
+        i, o = e.in_sample, e.out_of_sample
+        rows += (
+            f"<tr><td>{label}</td>"
+            f"<td>{i.expected_return:.2%}</td><td>{i.volatility:.2%}</td><td>{i.sharpe:.2f}</td>"
+            f"<td>{o.expected_return:.2%}</td><td>{o.volatility:.2%}</td><td>{o.sharpe:.2f}</td>"
+            f"</tr>"
+        )
+    note = (
+        "<div class='ok'><b>Out-of-sample backtest.</b> Weights were fit on the "
+        f"TRAIN window ({bt.train_span[0]} &rarr; {bt.train_span[1]}, {bt.train_days} days) "
+        "and evaluated <b>unchanged</b> on the TEST window "
+        f"({bt.test_span[0]} &rarr; {bt.test_span[1]}, {bt.test_days} days). The "
+        "out-of-sample columns are realized results &mdash; no re-optimization on test data.</div>"
+    )
+    table = (
+        "<table><thead>"
+        "<tr><th rowspan='2'>Portfolio</th>"
+        "<th colspan='3'>In-sample (train)</th>"
+        "<th colspan='3'>Out-of-sample (test)</th></tr>"
+        "<tr><th>Return</th><th>Vol</th><th>Sharpe</th>"
+        "<th>Return</th><th>Vol</th><th>Sharpe</th></tr></thead>"
+        f"<tbody>{rows}</tbody></table>"
+    )
+    return note + table
+
+
 def build_report(
     tickers,
     mu,
@@ -97,6 +137,7 @@ def build_report(
     warnings,
     metadata: dict,
     out_of_sample: dict | None = None,
+    backtest=None,
     output_path: str | None = None,
 ) -> str:
     """Assemble the report HTML (and write it to ``output_path`` if given)."""
@@ -108,7 +149,9 @@ def build_report(
         for k, v in metadata.items()
     )
 
-    if out_of_sample:
+    if backtest is not None:
+        sample_block = _backtest_block(backtest)
+    elif out_of_sample:
         oos_rows = "".join(
             f"<li>{html.escape(str(k))}: <b>{html.escape(str(v))}</b></li>"
             for k, v in out_of_sample.items()
