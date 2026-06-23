@@ -19,6 +19,7 @@ from .guardrails import (
     assess_portfolio,
 )
 from .optimize import min_variance, max_sharpe, efficient_frontier
+from .backtest import run_backtest
 from .report import build_report
 
 
@@ -33,9 +34,20 @@ def _parse_args(argv=None):
     p.add_argument("--n-points", type=int, default=50, help="Frontier resolution.")
     p.add_argument("--max-weight-warn", type=float, default=0.40,
                    help="Concentration warning threshold.")
+    p.add_argument("--backtest", action="store_true",
+                   help="Run an out-of-sample backtest (train/test split).")
+    p.add_argument("--split-date", default=None,
+                   help="Train/test split date YYYY-MM-DD (default: 70%% of the window).")
     p.add_argument("--cache-dir", default=CACHE_DIR_DEFAULT)
     p.add_argument("--out", default="report.html", help="Output HTML path.")
     return p.parse_args(argv)
+
+
+def _default_split_date(price_index) -> str:
+    """The date at the 70% position of the (chronological) price index."""
+    pos = int(len(price_index) * 0.70)
+    pos = min(max(pos, 1), len(price_index) - 1)
+    return str(price_index[pos].date())
 
 
 def main(argv=None) -> int:
@@ -60,6 +72,12 @@ def main(argv=None) -> int:
 
     warnings = assess_portfolio(ms, max_weight_warn=args.max_weight_warn)  # G2
 
+    # Optional out-of-sample backtest (G7 no_lookahead enforced inside).
+    backtest = None
+    if args.backtest:
+        split_date = args.split_date or _default_split_date(prices.index)
+        backtest = run_backtest(prices, split_date, rf=args.rf, bounds=bounds)
+
     metadata = {  # G6
         "Tickers": ", ".join(tickers),
         "Date window": f"{args.start} -> {args.end}",
@@ -69,18 +87,28 @@ def main(argv=None) -> int:
         "Annualization factor": TRADING_DAYS,
         "Generated": _dt.datetime.now().isoformat(timespec="seconds"),
     }
+    if backtest is not None:
+        metadata["Backtest split"] = (
+            f"{backtest.split_date} (train {backtest.train_days}d / test {backtest.test_days}d)"
+        )
 
     build_report(
         tickers=tickers, mu=mu, cov=cov, rf=args.rf,
         max_sharpe_result=ms, min_variance_result=mv, equal_weight_result=ew,
         frontier=frontier, warnings=warnings, metadata=metadata,
-        out_of_sample=None,  # in-sample only; backtest is a stretch goal
+        out_of_sample=None, backtest=backtest,
         output_path=args.out,
     )
     print(f"Wrote report to {args.out}")
     print(f"Max-Sharpe Sharpe={ms.sharpe:.3f} vs equal-weight Sharpe={ew.sharpe:.3f}")
     for w in warnings:
         print(f"  warning: {w}")
+    if backtest is not None:
+        print(f"Backtest split {backtest.split_date} "
+              f"(train {backtest.train_days}d / test {backtest.test_days}d):")
+        for name, e in backtest.entries.items():
+            print(f"  {name:13} Sharpe  in-sample={e.in_sample.sharpe:6.3f}  "
+                  f"out-of-sample={e.out_of_sample.sharpe:6.3f}")
     return 0
 
 
