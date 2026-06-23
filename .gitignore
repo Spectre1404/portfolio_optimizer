@@ -12,4 +12,5 @@ data_cache/
 
 # Generated outputs
 *.png
+!docs/*.png
 *.html
