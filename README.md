@@ -6,6 +6,8 @@ cached historical prices, finds the **max-Sharpe** and **min-variance** portfoli
 traces the **efficient frontier**, and produces a self-contained HTML report that
 compares the result honestly against a plain equal-weight (1/N) benchmark.
 
+![Portfolio optimizer report](docs/report1.png)
+
 > **Not investment advice.** The report describes what *was* mean-variance-optimal
 > on historical data under stated assumptions — not what to buy, and not a
 > prediction of future performance. See `portfolio_optimizer/CLAUDE.md` and

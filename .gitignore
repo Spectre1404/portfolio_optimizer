@@ -14,3 +14,4 @@ data_cache/
 *.png
 !docs/*.png
 *.html
+msft_stock_data.csv
